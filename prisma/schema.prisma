@@ -1,0 +1,32 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+// City model to store city details and image URL
+model City {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique
+  imageUrl  String?
+}
+
+// Connection model represents a single flight between two cities
+model Connection {
+  id        Int     @id @default(autoincrement())
+  fromCity  String
+  toCity    String
+  airfare   Float
+  duration  Float
+}
