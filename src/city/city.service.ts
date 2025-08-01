@@ -13,6 +13,11 @@ export class CitiesService {
 
   // CREATE a new city and upload an optional image
   async create(createCityDto: CreateCityDto, file?: Express.Multer.File) {
+    const normalizedCityName =
+      createCityDto.name.charAt(0).toUpperCase() +
+      createCityDto.name.slice(1).toLowerCase();
+
+    createCityDto.name = normalizedCityName;
     if (!createCityDto.name) {
       throw new NotFoundException('City name is required.');
     }

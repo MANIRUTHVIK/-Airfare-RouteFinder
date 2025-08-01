@@ -9,10 +9,15 @@ export class ConnectionsService {
 
   async create(createConnectionDto: CreateConnectionDto) {
     const { fromCity, toCity } = createConnectionDto;
-
+    const normalizedFromCity =
+      (await fromCity.charAt(0).toUpperCase()) +
+      fromCity.slice(1).toLowerCase();
+    const normalizedToCity =
+      (await toCity.charAt(0).toUpperCase()) + toCity.slice(1).toLowerCase();
     await this.ensureCityExists(fromCity);
     await this.ensureCityExists(toCity);
-
+    createConnectionDto.fromCity = normalizedFromCity;
+    createConnectionDto.toCity = normalizedToCity;
     return this.prisma.connection.create({
       data: createConnectionDto,
     });
