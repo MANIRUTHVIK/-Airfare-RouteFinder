@@ -6,10 +6,12 @@ import {
   HttpStatus,
   Post,
   Request,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -17,8 +19,19 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  signIn(@Body() signInDto: Record<string, any>) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+  async signIn(
+    @Body() signInDto: Record<string, any>,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const { access_token } = await this.authService.signIn(
+      signInDto.username,
+      signInDto.password,
+    );
+    response.cookie('jwt', access_token, {
+      httpOnly: true,
+      secure: false,
+    });
+    return { access_token };
   }
 
   @UseGuards(AuthGuard)
