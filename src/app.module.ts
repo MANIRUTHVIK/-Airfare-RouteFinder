@@ -5,8 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { CitiesModule } from './city/city.module';
 import { UserSearchModule } from './user-search/user-search.module';
-import { FlightconnectionModule } from './flightconnection/flightconnection.module';
 import { PrismaService } from './core/services/prisma.service';
+import { ConnectionsModule } from './connections/connections.module';
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { PrismaService } from './core/services/prisma.service';
     }),
     CitiesModule,
     UserSearchModule,
-    FlightconnectionModule,
+    ConnectionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

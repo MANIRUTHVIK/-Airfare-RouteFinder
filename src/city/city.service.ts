@@ -39,7 +39,6 @@ export class CitiesService {
     });
   }
 
-  // UPDATE an existing city's name and/or image
   async update(
     id: number,
     updateCityDto: UpdateCityDto,
