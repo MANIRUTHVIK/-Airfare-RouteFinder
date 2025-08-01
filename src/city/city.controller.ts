@@ -9,17 +9,20 @@ import {
   ParseIntPipe,
   UseInterceptors,
   UploadedFile,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CitiesService } from './city.service';
 import { CreateCityDto } from './dto/create-city.dto';
 import { UpdateCityDto } from './dto/update-city.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('cities')
 export class CitiesController {
   constructor(private readonly citiesService: CitiesService) {}
 
   // POST /api/cities
+  @UseGuards(AuthGuard)
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   create(
@@ -42,6 +45,7 @@ export class CitiesController {
   }
 
   // PATCH /api/cities/:id
+  @UseGuards(AuthGuard)
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image'))
   update(
@@ -53,6 +57,7 @@ export class CitiesController {
   }
 
   // DELETE /api/cities/:id
+  @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.citiesService.delete(id);
