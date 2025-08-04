@@ -16,13 +16,29 @@ import { CitiesService } from './city.service';
 import { CreateCityDto } from './dto/create-city.dto';
 import { UpdateCityDto } from './dto/update-city.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('Cities') // Group under 'Cities' tag in Swagger UI
 @Controller('cities')
 export class CitiesController {
   constructor(private readonly citiesService: CitiesService) {}
 
-  // POST /api/cities
-  // @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Create a new city' })
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'City data including optional image upload',
+    type: CreateCityDto,
+  })
+  @ApiResponse({ status: 201, description: 'City created successfully' })
+  @UseGuards(AuthGuard)
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   create(
@@ -32,19 +48,29 @@ export class CitiesController {
     return this.citiesService.create(createCityDto, file);
   }
 
-  // GET /api/cities
+  @ApiOperation({ summary: 'Get all cities' })
+  @ApiResponse({ status: 200, description: 'List of all cities' })
   @Get()
   findAll() {
     return this.citiesService.findAll();
   }
 
-  // GET /api/cities/:id
+  @ApiOperation({ summary: 'Get a single city by ID' })
+  @ApiResponse({ status: 200, description: 'City found' })
+  @ApiResponse({ status: 404, description: 'City not found' })
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.citiesService.findOne(id);
   }
 
-  // PATCH /api/cities/:id
+  @ApiOperation({ summary: 'Update a city by ID' })
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Updated city data including optional image upload',
+    type: UpdateCityDto,
+  })
+  @ApiResponse({ status: 200, description: 'City updated successfully' })
   @UseGuards(AuthGuard)
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image'))
@@ -56,7 +82,9 @@ export class CitiesController {
     return this.citiesService.update(id, updateCityDto, file);
   }
 
-  // DELETE /api/cities/:id
+  @ApiOperation({ summary: 'Delete a city by ID' })
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, description: 'City deleted successfully' })
   @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
