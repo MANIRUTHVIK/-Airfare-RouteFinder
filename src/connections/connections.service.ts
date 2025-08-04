@@ -2,10 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../core/services/prisma.service';
 import { CreateConnectionDto } from './dto/create-connection.dto';
 import { UpdateConnectionDto } from './dto/update-connection.dto';
+import { GeminiService } from 'src/core/services/gemini.service';
 
 @Injectable()
 export class ConnectionsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly geminiService: GeminiService,
+  ) {}
 
   async create(createConnectionDto: CreateConnectionDto) {
     const { fromCity, toCity } = createConnectionDto;
@@ -32,11 +36,17 @@ export class ConnectionsService {
     });
 
     if (!city) {
-      await this.prisma.city.create({
-        data: {
-          name: normalizedName,
-          imageUrl: `https://demofree.sirv.com/nope-not-here.jpg`,
-        },
+      const newCity = await this.prisma.city.create({
+        data: { name: normalizedName },
+      });
+      const imageUrl = await this.geminiService.generateImage(
+        normalizedName,
+        newCity.id,
+      );
+
+      await this.prisma.city.update({
+        where: { id: newCity.id },
+        data: { imageUrl },
       });
     }
   }

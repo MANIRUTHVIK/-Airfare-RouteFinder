@@ -22,7 +22,7 @@ export class CitiesController {
   constructor(private readonly citiesService: CitiesService) {}
 
   // POST /api/cities
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   create(
