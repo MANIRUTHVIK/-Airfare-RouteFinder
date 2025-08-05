@@ -34,8 +34,17 @@ export class CitiesController {
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'City data including optional image upload',
-    type: CreateCityDto,
+    schema: {
+      type: 'object',
+      properties: {
+        cityName: { type: 'string', example: 'Hyderabad' },
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Image file for the city',
+        },
+      },
+    },
   })
   @ApiResponse({ status: 201, description: 'City created successfully' })
   @UseGuards(AuthGuard)
@@ -67,8 +76,21 @@ export class CitiesController {
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'Updated city data including optional image upload',
-    type: UpdateCityDto,
+    schema: {
+      type: 'object',
+      properties: {
+        cityName: {
+          type: 'string',
+          example: 'New Delhi',
+          description: 'New name for the city (optional)',
+        },
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'New image for the city (optional)',
+        },
+      },
+    },
   })
   @ApiResponse({ status: 200, description: 'City updated successfully' })
   @UseGuards(AuthGuard)
