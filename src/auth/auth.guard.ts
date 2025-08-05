@@ -29,10 +29,13 @@ export class AuthGuard implements CanActivate {
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
+    // Try to get token from Authorization header
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    if (type !== 'Bearer') {
-      return type === 'Bearer' ? token : undefined;
+    if (type === 'Bearer') {
+      return token;
     }
-    return request.cookies['jwt'] || undefined;
+
+    // Fallback to JWT cookie if no valid Authorization header
+    return request.cookies['jwt'];
   }
 }
