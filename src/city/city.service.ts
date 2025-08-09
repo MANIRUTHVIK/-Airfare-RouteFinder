@@ -53,7 +53,6 @@ export class CitiesService {
     if (!city) {
       throw new NotFoundException(`City with ID ${id} not found.`);
     }
-
     let imageUrl = city.imageUrl;
     if (file) {
       // If an old image exists, delete it from S3
@@ -64,6 +63,20 @@ export class CitiesService {
       // Upload the new image
       const newKey = `city-images/${id}-${Date.now()}-${file.originalname.replace(/\s/g, '_')}`;
       imageUrl = await this.s3Service.uploadFile(file, newKey);
+    }
+    if (updateCityDto.name) {
+      const normalizedCityName =
+        updateCityDto.name.charAt(0).toUpperCase() +
+        updateCityDto.name.slice(1).toLowerCase();
+      updateCityDto.name = normalizedCityName;
+      const UpdateFromCity = await this.prisma.connection.updateMany({
+        where: { fromCity: city.name },
+        data: { fromCity: normalizedCityName },
+      });
+      const UpdateToCity = await this.prisma.connection.updateMany({
+        where: { toCity: city.name },
+        data: { toCity: normalizedCityName },
+      });
     }
 
     return this.prisma.city.update({
