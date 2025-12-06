@@ -105,11 +105,10 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
     # Database (Neon PostgreSQL)
     DATABASE_URL=your_postgres_url_here
 
-    # AWS S3 Configuration
-    AWS_S3_REGION=your_region_here
-    AWS_ACCESS_KEY_ID=your_access_key_here
-    AWS_SECRET_ACCESS_KEY=your_secret_key_here
-    AWS_S3_BUCKET_NAME=your_bucket_name_here
+    # Cloudinary Configuration
+    CLOUDINARY_CLOUD_NAME=your_cloud_name_here
+    CLOUDINARY_API_KEY=your_api_key_here
+    CLOUDINARY_API_SECRET=your_api_secret_here
 
     # Gemini AI
     GEMINI_API_KEY=your_gemini_api_key_here

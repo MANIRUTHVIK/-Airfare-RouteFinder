@@ -3,10 +3,15 @@ import { ConnectionsService } from './connections.service';
 import { ConnectionsController } from './connections.controller';
 import { PrismaService } from 'src/core/services/prisma.service';
 import { GeminiService } from 'src/core/services/gemini.service';
-import { S3Service } from 'src/core/services/s3.service';
+import { CloudinaryService } from 'src/core/services/cloudinary.service';
 
 @Module({
   controllers: [ConnectionsController],
-  providers: [ConnectionsService, PrismaService, GeminiService, S3Service],
+  providers: [
+    ConnectionsService,
+    PrismaService,
+    GeminiService,
+    CloudinaryService,
+  ],
 })
 export class ConnectionsModule {}

@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { GoogleGenAI, Modality } from '@google/genai';
-import { S3Service } from './s3.service';
+import { CloudinaryService } from './cloudinary.service';
 
 @Injectable()
 export class GeminiService {
   private readonly genAI: GoogleGenAI;
 
-  constructor(private readonly s3Service: S3Service) {
+  constructor(private readonly cloudinaryService: CloudinaryService) {
     this.genAI = new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY,
     });
@@ -55,9 +55,12 @@ export class GeminiService {
           } as Express.Multer.File;
 
           const fileKey = `city-images/${id}-${Date.now()}-${cityName.replace(/\s/g, '_')}.png`;
-          const uploadResult = await this.s3Service.uploadFile(file, fileKey);
+          const uploadResult = await this.cloudinaryService.uploadFile(
+            file,
+            'city-images',
+          );
 
-          console.log('Image uploaded to S3:', uploadResult);
+          console.log('Image uploaded to Cloudinary:', uploadResult);
           return uploadResult;
         }
       }

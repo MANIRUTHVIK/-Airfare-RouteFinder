@@ -7,13 +7,13 @@ import {
 import { CreateCityDto } from './dto/create-city.dto';
 import { UpdateCityDto } from './dto/update-city.dto';
 import { PrismaService } from 'src/core/services/prisma.service';
-import { S3Service } from 'src/core/services/s3.service';
+import { CloudinaryService } from 'src/core/services/cloudinary.service';
 
 @Injectable()
 export class CitiesService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly s3Service: S3Service,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   private normalizeCityName(name: string): string {
@@ -47,10 +47,9 @@ export class CitiesService {
     let imageUrl: string | undefined;
     if (file) {
       try {
-        const fileKey = `city-images/${newCity.id}-${Date.now()}-${file.originalname.replace(/\s/g, '_')}`;
-        imageUrl = await this.s3Service.uploadFile(file, fileKey);
+        imageUrl = await this.cloudinaryService.uploadFile(file, 'city-images');
       } catch (error) {
-        // If S3 upload fails, we should still return the city but log the error
+        // If Cloudinary upload fails, we should still return the city but log the error
         console.error('Failed to upload city image:', error);
       }
     }
@@ -78,13 +77,14 @@ export class CitiesService {
       try {
         // Delete old image if it exists
         if (city.imageUrl) {
-          const oldKey = city.imageUrl.split('/').pop();
-          if (oldKey) await this.s3Service.deleteFile(`city-images/${oldKey}`);
+          const publicId = this.cloudinaryService.extractPublicId(
+            city.imageUrl,
+          );
+          if (publicId) await this.cloudinaryService.deleteFile(publicId);
         }
 
         // Upload new image
-        const newKey = `city-images/${id}-${Date.now()}-${file.originalname.replace(/\s/g, '_')}`;
-        imageUrl = await this.s3Service.uploadFile(file, newKey);
+        imageUrl = await this.cloudinaryService.uploadFile(file, 'city-images');
       } catch (error) {
         console.error('Failed to update city image:', error);
         throw new BadRequestException('Failed to update city image');
@@ -144,14 +144,14 @@ export class CitiesService {
       },
     });
 
-    // Delete S3 image if it exists
+    // Delete Cloudinary image if it exists
     if (city.imageUrl) {
       try {
-        const key = city.imageUrl.split('/').pop();
-        if (key) await this.s3Service.deleteFile(`city-images/${key}`);
+        const publicId = this.cloudinaryService.extractPublicId(city.imageUrl);
+        if (publicId) await this.cloudinaryService.deleteFile(publicId);
       } catch (error) {
-        console.error('Failed to delete city image from S3:', error);
-        // Continue with city deletion even if S3 deletion fails
+        console.error('Failed to delete city image from Cloudinary:', error);
+        // Continue with city deletion even if Cloudinary deletion fails
       }
     }
 
